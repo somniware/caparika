@@ -22,6 +22,7 @@ app.prepare().then(() => {
   }).listen(port)
 
   // tslint:disable-next-line:no-console
+  // postgres://dziorrtsguzlrx:fb1ebdc5c788dc725590d868190a67a5e54e5bba6562aad55de6ed9dd011d339@ec2-52-50-171-4.eu-west-1.compute.amazonaws.com:5432/df4b4f0fn34sfi
   console.log(
     `> Server listening at http://localhost:${port} as ${
       dev ? 'development' : process.env.NODE_ENV

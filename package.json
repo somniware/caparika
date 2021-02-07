@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "nodemon",
     "build": "next build && tsc --project tsconfig.server.json",
-    "start": "cross-env NODE_ENV=production node dist/index.js -p $PORT"
+    "start": "node dist/index.js -p $PORT",
+    "bla": "cross-env NODE_ENV=production node dist/index.js -p $PORT"
   },
   "dependencies": {
     "cross-env": "^7.0.2",
