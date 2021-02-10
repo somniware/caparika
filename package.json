@@ -1,6 +1,9 @@
 {
   "name": "custom-server-typescript",
   "version": "1.0.0",
+  "engines": {
+    "node": "15.x"
+  },
   "scripts": {
     "dev": "nodemon",
     "build": "next build && tsc --project tsconfig.server.json",
