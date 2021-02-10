@@ -24,8 +24,8 @@ const isAuth: RequestHandler = (req, _res, next) => {
   if (!decodedToken) {
     const error = new CustomError('Not authenticated.');
     error.statusCode = 401;
-    const rrr = new Error('asdasdasd');
-    rrr.patka = 33;
+    // const rrr = new Error('asdasdasd');
+    // rrr.patka = 33;
     throw error;
   }
 
