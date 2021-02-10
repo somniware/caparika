@@ -1,15 +1,14 @@
 import Link from 'next/link'
 import Head from 'next/head'
-import Layout, { siteTitle } from '../components/layout'
-import utilStyles from '../styles/utils.module.css'
+import DashboardLayout from '../../components/layout-dashboard'
 
 const Dashboard = () => {
   return (
-    <Layout>
+    <DashboardLayout>
       <Head>
-        <title>{siteTitle}</title>
+        {/* <title>{siteTitle}</title> */}
       </Head>
-      <section className={utilStyles.headingMd}>
+      <section className="bla">
         <p>[Your Self Introduction]</p>
         <p>
           (This is a sample website - you’ll be building a site like this on{' '}
@@ -28,7 +27,7 @@ const Dashboard = () => {
       </li>
     </ul>
       </section>
-    </Layout>
+    </DashboardLayout>
   )
 }
 

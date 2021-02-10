@@ -44,7 +44,7 @@ const Home = () => {
     alert(data.firstName + ' ' + data.lastName + ' ' + data.email + ' ' + data.gender);
   };
 
-  const [selectedItems, setSelectedItems] = useState([]);
+  const [selectedItems/*, setSelectedItems*/] = useState([]);
 
   const resourceName = {
     singular: 'product',

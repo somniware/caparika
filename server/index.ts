@@ -16,14 +16,15 @@ app.prepare().then(() => {
 
   server.use(express.json());
 
-  server.get('*', (req, res) => {
+  // ovo vrv ispod API routes?
+  server.all('*', (req, res) => {// .get
      return handle(req, res);
   });
 
-  server.use('/auth', authRoutes);
-  server.use('/products', productRoutes);
-  server.use('/customers', customerRoutes);
-  server.use('/orders', orderRoutes);
+  server.use('/api/auth', authRoutes);
+  server.use('/api/products', productRoutes);
+  server.use('/api/customers', customerRoutes);
+  server.use('/api/orders', orderRoutes);
   
   server.use((error: any, _req: Request, res: Response, _next: NextFunction) => {
     console.log(error);
@@ -38,20 +39,7 @@ app.prepare().then(() => {
   //   return app.render(req, res, '/a', req.query)
   // })
 
-  // server.all('*', (req, res) => {
-  //   return handle(req, res)
-  // })
-
   server.listen(port, () => {
-    console.log(`> Ready on http://localhost:${port}`)
+    console.log(`> Ready on http://localhost:${port}`);
   });
-
-
-  // tslint:disable-next-line:no-console
-  // postgres://dziorrtsguzlrx:fb1ebdc5c788dc725590d868190a67a5e54e5bba6562aad55de6ed9dd011d339@ec2-52-50-171-4.eu-west-1.compute.amazonaws.com:5432/df4b4f0fn34sfi
-  console.log(
-    `> Server listening at http://localhost:${port} as ${
-      dev ? 'development' : process.env.NODE_ENV
-    }`
-  )
 });
