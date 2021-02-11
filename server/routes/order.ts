@@ -1,5 +1,5 @@
 import express from 'express';
-import { body } from 'express-validator/check';
+import { body } from 'express-validator';
 
 // import User from '../models/user';
 import * as orderController from '../controllers/order';

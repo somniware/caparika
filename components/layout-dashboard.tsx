@@ -1,40 +1,32 @@
+import { ReactNode, useState, useCallback } from "react";
+import { Frame, TopBar, IconableAction, Navigation } from "@shopify/polaris";
 import {
-  ReactNode,
-  useState,
-  useCallback
-} from 'react';
-import {
-  Frame,
-  TopBar,
-  IconableAction,
-} from '@shopify/polaris';
-import { ArrowLeftMinor } from '@shopify/polaris-icons';
-import Head from 'next/head';
+  OrdersMajor,
+  ProductsMajor,
+  CustomersMajor,
+} from "@shopify/polaris-icons";
+import Head from "next/head";
 
-interface Props  { 
+interface Props {
   children: ReactNode;
 }
 
-const DashboardLayout = ({ children }: Props) => {
+const dashboardLayout = ({ children }: Props) => {
   const [userMenuActive, setUserMenuActive] = useState(false);
   const toggleUserMenuActive = useCallback(
     () => setUserMenuActive((userMenuActive) => !userMenuActive),
-    [],
+    []
   );
 
   const userMenuActions: { items: IconableAction[] }[] = [
-    { items: [{
-        content: 'Logout',
-        url: '/auth/logout'
-      }]
+    {
+      items: [
+        {
+          content: "Logout",
+          url: "/auth/logout",
+        },
+      ],
     },
-    { items: [{
-        content: 'Back',
-        url: '/',
-        icon: ArrowLeftMinor,
-        
-      }]
-    }
   ];
 
   const userMenuMarkup = (
@@ -47,33 +39,47 @@ const DashboardLayout = ({ children }: Props) => {
     />
   );
 
-  const topBarMarkup = (
-    <TopBar
-      userMenu={userMenuMarkup}
-    />
+  const topBarMarkup = <TopBar userMenu={userMenuMarkup} />;
+
+  const navigationMarkup = (
+    <Navigation location="/">
+      <Navigation.Section
+        items={[
+          {
+            url: "/dashboard/products",
+            label: "Products",
+            icon: ProductsMajor,
+          },
+          {
+            url: "/dashboard/orders",
+            label: "Orders",
+            icon: OrdersMajor,
+            // badge: '15',
+          },
+          {
+            url: "/dashboard/customers",
+            label: "Customers",
+            icon: CustomersMajor,
+          },
+        ]}
+      />
+    </Navigation>
   );
 
   return (
     <>
       <Head>
-        <link rel="icon" href="/favicon.ico" />
+        <title>Dashboard</title>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta httpEquiv="X-UA-Compatible" content="ie=edge" />
-        <link rel="stylesheet" href="/css/main.css" />
-        <meta
-          name="description"
-          content="Showcase application for Caparika"
-        />
+        <meta name="description" content="Showcase application for Caparika" />
       </Head>
-      <Frame
-        topBar={topBarMarkup}
-        // navigation={navigationMarkup}
-      >
+      <Frame topBar={topBarMarkup} navigation={navigationMarkup}>
         {children}
       </Frame>
     </>
   );
-}
+};
 
-export default DashboardLayout;
+export default dashboardLayout;

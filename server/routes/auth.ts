@@ -1,17 +1,17 @@
-import express from 'express';
-import { body } from 'express-validator';
+import express from "express";
+import { body } from "express-validator";
 
 //import User from '../models/user';
-import { signup, login } from '../controllers/auth';
+import { signup, login } from "../controllers/auth";
 
 const router = express.Router();
 
 router.put(
-  '/signup',
+  "/signup",
   [
-    body('email')
+    body("email")
       .isEmail()
-      .withMessage('Please enter a valid email.')
+      .withMessage("Please enter a valid email.")
       // .custom((value, { req }) => {
       //   return User.findOne({ email: value }).then(userDoc => {
       //     if (userDoc) {
@@ -20,18 +20,13 @@ router.put(
       //   });
       // })
       .normalizeEmail(),
-    body('password')
-      .trim()
-      .isLength({ min: 5 }),
-    body('name')
-      .trim()
-      .not()
-      .isEmpty()
+    body("password").trim().isLength({ min: 5 }),
+    body("name").trim().not().isEmpty(),
   ],
   signup
 );
 
-router.post('/login', login);
+router.post("/login", login);
 
 // router.get('/status', isAuth, authController.getUserStatus);
 
