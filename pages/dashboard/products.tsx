@@ -30,7 +30,7 @@ const schema = yup.object().shape({
   price: yup.number().required(),
 });
 
-const products = () => {
+const Products: React.FC = () => {
   const { control, handleSubmit, errors } = useForm({
     resolver: yupResolver(schema),
   });
@@ -157,4 +157,4 @@ const products = () => {
   );
 };
 
-export default products;
+export default Products;

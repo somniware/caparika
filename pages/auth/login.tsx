@@ -13,8 +13,10 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import Head from "next/head";
+import Router from "next/router";
 
 import GeneralLayout from "../../components/layout-general";
+import { useStore } from "../../hooks-store/store";
 
 interface IFormInputs {
   email: string;
@@ -26,13 +28,53 @@ const schema = yup.object().shape({
   password: yup.string().trim().required(),
 });
 
-const login = () => {
+const Login: React.FC = () => {
   const { control, handleSubmit, errors } = useForm({
     resolver: yupResolver(schema),
   });
+  const [, dispatch] = useStore();
 
-  const onSubmit = (data: IFormInputs) => {
-    alert(data.email + " " + data.password);
+  const setAutoLogout = (milliseconds: number) => {
+    setTimeout(() => {
+      dispatch("LOGOUT");
+    }, milliseconds);
+  };
+
+  const onSubmit = async (data: IFormInputs) => {
+    try {
+      const result = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+        }),
+      });
+
+      if (result.status === 422) {
+        throw new Error("Validation failed.");
+      }
+      if (result.status !== 200) {
+        throw new Error("Could not authenticate you!");
+      }
+
+      const resultData = await result.json();
+      dispatch("LOGIN", resultData.token);
+
+      const remainingMilliseconds = 15 * 60 * 1000;
+      const expiryDate = new Date(new Date().getTime() + remainingMilliseconds);
+
+      localStorage.setItem("expiryDate", expiryDate.toISOString());
+      localStorage.setItem("token", resultData.token);
+      localStorage.setItem("userId", resultData.userId);
+
+      setAutoLogout(remainingMilliseconds);
+      Router.push("/dashboard");
+    } catch (err) {
+      dispatch("LOGOUT");
+    }
   };
 
   return (
@@ -83,7 +125,9 @@ const login = () => {
                       />
                       <Caption>{errors.password?.message}</Caption>
 
-                      <Button submit>Submit</Button>
+                      <Button submit fullWidth>
+                        Submit
+                      </Button>
                     </FormLayout>
                   </Form>
                 </Card.Section>
@@ -96,4 +140,4 @@ const login = () => {
   );
 };
 
-export default login;
+export default Login;

@@ -1,4 +1,4 @@
-import { ReactNode, useState, useCallback } from "react";
+import { ReactNode, useState, useCallback, Redirect } from "react";
 import { Frame, TopBar, IconableAction, Navigation } from "@shopify/polaris";
 import {
   OrdersMajor,
@@ -6,24 +6,35 @@ import {
   CustomersMajor,
 } from "@shopify/polaris-icons";
 import Head from "next/head";
+import Router from "next/router";
+
+import { useStore } from "../hooks-store/store";
 
 interface Props {
   children: ReactNode;
 }
 
-const dashboardLayout = ({ children }: Props) => {
+const DashboardLayout: React.FC<Props> = ({ children }) => {
   const [userMenuActive, setUserMenuActive] = useState(false);
   const toggleUserMenuActive = useCallback(
     () => setUserMenuActive((userMenuActive) => !userMenuActive),
     []
   );
+  const [state, dispatch] = useStore();
+
+  if (!(state as { isAuth: boolean }).isAuth) {
+    Router.push("/");
+  }
 
   const userMenuActions: { items: IconableAction[] }[] = [
     {
       items: [
         {
           content: "Logout",
-          url: "/auth/logout",
+          onAction: () => {
+            dispatch("LOGOUT");
+            Router.push("/");
+          },
         },
       ],
     },
@@ -82,4 +93,4 @@ const dashboardLayout = ({ children }: Props) => {
   );
 };
 
-export default dashboardLayout;
+export default DashboardLayout;

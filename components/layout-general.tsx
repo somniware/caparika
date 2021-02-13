@@ -2,13 +2,12 @@ import { ReactNode, useState, useCallback } from "react";
 import { Frame, TopBar, IconableAction } from "@shopify/polaris";
 import { ArrowLeftMinor } from "@shopify/polaris-icons";
 import Head from "next/head";
-// import Link from 'next/link';
 
 interface Props {
   children: ReactNode;
 }
 
-const generalLayout = ({ children }: Props) => {
+const GeneralLayout: React.FC<Props> = ({ children }) => {
   const [userMenuActive, setUserMenuActive] = useState(false);
   const toggleUserMenuActive = useCallback(
     () => setUserMenuActive((userMenuActive) => !userMenuActive),
@@ -83,4 +82,4 @@ const generalLayout = ({ children }: Props) => {
   );
 };
 
-export default generalLayout;
+export default GeneralLayout;

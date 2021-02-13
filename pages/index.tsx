@@ -5,7 +5,6 @@ import {
   Card,
   ResourceList,
   TextStyle,
-  ResourceItem,
   TextField,
   FormLayout,
   Select,
@@ -17,6 +16,11 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import dynamic from "next/dynamic";
+const DynamicResourceItem = dynamic(
+  () => import("../components/dynamic-resource-item"),
+  { ssr: false }
+);
 
 import GeneralLayout from "../components/layout-general";
 import Product from "../server/models/product";
@@ -35,7 +39,7 @@ const schema = yup.object().shape({
   gender: yup.string().required(),
 });
 
-const home = () => {
+const Home: React.FC = () => {
   const { control, handleSubmit, errors } = useForm({
     resolver: yupResolver(schema),
   });
@@ -77,12 +81,12 @@ const home = () => {
     const { id, name, price } = item;
 
     return (
-      <ResourceItem id={id.toString()} url="https://google.com">
+      <DynamicResourceItem id={id.toString()} url="https://google.com">
         <h3>
           <TextStyle variation="strong">{name}</TextStyle>
         </h3>
         <div>{price}</div>
-      </ResourceItem>
+      </DynamicResourceItem>
     );
   };
 
@@ -93,15 +97,10 @@ const home = () => {
 
   return (
     <GeneralLayout>
-      <Page fullWidth title="Ordering">
+      <Page fullWidth title="Order form">
         <Layout>
-          <Layout.Section oneHalf>
-            <Card title="Customer data" sectioned>
-              <Card.Section>
-                <TextStyle variation="subdued">
-                  Enter your data please
-                </TextStyle>
-              </Card.Section>
+          <Layout.Section>
+            <Card title="Make your order" sectioned>
               <Card.Section>
                 <Form onSubmit={handleSubmit(onSubmit)}>
                   <FormLayout>
@@ -154,6 +153,7 @@ const home = () => {
                       name="gender"
                       control={control}
                       //options={options}
+                      defaultValue="male"
                       render={({ onChange, value }) => (
                         <Select
                           label="Gender"
@@ -163,18 +163,11 @@ const home = () => {
                         />
                       )}
                     />
-                    <Button submit>Submit</Button>
+                    <Button submit fullWidth>
+                      Submit
+                    </Button>
                   </FormLayout>
                 </Form>
-              </Card.Section>
-            </Card>
-          </Layout.Section>
-          <Layout.Section oneHalf>
-            <Card title="Products" sectioned>
-              <Card.Section>
-                <TextStyle variation="subdued">
-                  Choose your products please
-                </TextStyle>
               </Card.Section>
               <Card.Section>
                 <Scrollable>
@@ -196,4 +189,4 @@ const home = () => {
   );
 };
 
-export default home;
+export default Home;

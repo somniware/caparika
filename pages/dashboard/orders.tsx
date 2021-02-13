@@ -12,7 +12,7 @@ import {
 import DashboardLayout from "../../components/layout-dashboard";
 import Product from "../../server/models/product";
 
-const orders = () => {
+const Orders: React.FC = () => {
   const [selectedItems /*, setSelectedItems*/] = useState<string[]>([]);
 
   const resourceName = {
@@ -86,4 +86,4 @@ const orders = () => {
   );
 };
 
-export default orders;
+export default Orders;

@@ -1,8 +1,9 @@
 import express from "express";
 import { body } from "express-validator";
 
-//import User from '../models/user';
-import { signup, login } from "../controllers/auth";
+import prisma from "../utils/prisma";
+//import isAuth from "../middleware/is-auth";
+import { signup, login /*, logout */ } from "../controllers/auth";
 
 const router = express.Router();
 
@@ -12,22 +13,32 @@ router.put(
     body("email")
       .isEmail()
       .withMessage("Please enter a valid email.")
-      // .custom((value, { req }) => {
-      //   return User.findOne({ email: value }).then(userDoc => {
-      //     if (userDoc) {
-      //       return Promise.reject('E-Mail address already exists!');
-      //     }
-      //   });
-      // })
+      .custom(async (value) => {
+        const userRec = await prisma.user.findUnique({
+          where: { email: value },
+        });
+        if (userRec) {
+          return Promise.reject("E-Mail address already exists!");
+        }
+      })
       .normalizeEmail(),
-    body("password").trim().isLength({ min: 5 }),
-    body("name").trim().not().isEmpty(),
+    body("password").trim().isLength({ min: 1 }),
   ],
   signup
 );
 
-router.post("/login", login);
+router.post(
+  "/login",
+  [
+    body("email")
+      .isEmail()
+      .withMessage("Please enter a valid email.")
+      .normalizeEmail(),
+    body("password").trim().isLength({ min: 1 }),
+  ],
+  login
+);
 
-// router.get('/status', isAuth, authController.getUserStatus);
+//router.post("/logout", isAuth, logout);
 
 export default router;

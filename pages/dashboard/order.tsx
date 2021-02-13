@@ -1,9 +1,7 @@
-import React from 'react';
+import React from "react";
 
-const order = () => {
-  return (
-    <div>hello</div>
-  );
-}
+const Order: React.FC = () => {
+  return <div>hello</div>;
+};
 
-export default order;
+export default Order;

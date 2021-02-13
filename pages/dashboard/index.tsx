@@ -2,7 +2,7 @@ import { Page, EmptyState, Layout, Card } from "@shopify/polaris";
 
 import DashboardLayout from "../../components/layout-dashboard";
 
-const Dashboard = () => {
+const Dashboard: React.FC = () => {
   return (
     <DashboardLayout>
       <Page>
