@@ -80,7 +80,7 @@ const Products: React.FC = () => {
       const resultData = await result.json();
       setProducts([resultData.product, ...products]);
     } catch (err) {
-      //dispatch("LOGOUT");
+      console.log(err);
     }
   };
 

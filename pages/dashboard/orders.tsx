@@ -12,7 +12,7 @@ import {
 
 import DashboardLayout from "../../components/layout-dashboard";
 import { useStore } from "../../hooks-store/store";
-import { Order } from "@prisma/client";
+import { Order, Product, Customer } from "@prisma/client";
 
 const Orders: React.FC = () => {
   const [state] = useStore();
@@ -20,6 +20,7 @@ const Orders: React.FC = () => {
   const [selectedItems, setSelectedItems] = useState<ResourceListSelectedItems>(
     []
   );
+  const [selectedOrder, setSelectedOrder] = useState<Order>();
 
   useEffect(() => {
     (async () => {
@@ -72,19 +73,37 @@ const Orders: React.FC = () => {
   ];
 
   const renderItem = (item: Order) => {
-    const { id, creatorId } = item;
+    const { id } = item;
 
     return (
-      <ResourceItem id={id.toString()} onClick={() => {}}>
+      <ResourceItem
+        id={id.toString()}
+        onClick={async () => {
+          const result = await fetch(`/api/orders/${id}`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + (state as { token: string }).token,
+            },
+          });
+
+          const order = await result.json();
+          setSelectedOrder(order);
+        }}
+      >
         <h3>
-          <TextStyle variation="strong">{creatorId}</TextStyle>
+          <TextStyle variation="strong">{id}</TextStyle>
         </h3>
-        <div>
+        {/* <div>
           <TextStyle variation="subdued">{creatorId}</TextStyle>
-        </div>
+        </div> */}
       </ResourceItem>
     );
   };
+
+  const customerDetail =
+    selectedOrder &&
+    ((selectedOrder as unknown) as { creator: Customer }).creator;
 
   return (
     <DashboardLayout>
@@ -109,6 +128,40 @@ const Orders: React.FC = () => {
                   />
                 </Scrollable>
               </Card.Section>
+            </Card>
+          </Layout.Section>
+          <Layout.Section>
+            <Card title="Detail" sectioned>
+              <Card.Section>
+                <TextStyle variation="subdued">Order details</TextStyle>
+              </Card.Section>
+              {selectedOrder && (
+                <Card.Section>
+                  <h3>
+                    <TextStyle variation="strong">{selectedOrder.id}</TextStyle>
+                  </h3>
+                  <div>
+                    <TextStyle variation="subdued">
+                      {customerDetail?.firstName +
+                        " " +
+                        customerDetail?.lastName +
+                        " | " +
+                        customerDetail?.gender +
+                        " | " +
+                        customerDetail?.email}
+                    </TextStyle>
+                  </div>
+                  <ul>
+                    {((selectedOrder as unknown) as {
+                      products: Product[];
+                    }).products.map((item) => {
+                      <li key={item.id}>
+                        {item.name} - {item.price}
+                      </li>;
+                    })}
+                  </ul>
+                </Card.Section>
+              )}
             </Card>
           </Layout.Section>
         </Layout>

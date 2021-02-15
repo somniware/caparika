@@ -46,7 +46,7 @@ const DashboardLayout: React.FC<Props> = ({ children }) => {
     <TopBar.UserMenu
       actions={userMenuActions}
       name="Dashboard"
-      initials="U"
+      initials="USR"
       open={userMenuActive}
       onToggle={toggleUserMenuActive}
     />
@@ -67,7 +67,6 @@ const DashboardLayout: React.FC<Props> = ({ children }) => {
             url: "/dashboard/orders",
             label: "Orders",
             icon: OrdersMajor,
-            // badge: '15',
           },
           {
             url: "/dashboard/customers",
@@ -94,20 +93,5 @@ const DashboardLayout: React.FC<Props> = ({ children }) => {
     </>
   );
 };
-
-// export async function getStaticProps() {
-//   const res = await fetch("https://.../posts");
-//   const posts = await res.json();
-
-//   return {
-//     props: {
-//       posts,
-//     },
-//     // Next.js will attempt to re-generate the page:
-//     // - When a request comes in
-//     // - At most once every second
-//     revalidate: 1, // In seconds
-//   };
-// }
 
 export default DashboardLayout;

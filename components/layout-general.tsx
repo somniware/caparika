@@ -46,24 +46,18 @@ const GeneralLayout: React.FC<Props> = ({ children }) => {
     <TopBar.UserMenu
       actions={userMenuActions}
       name="Dashboard"
-      //detail="Bla"
-      initials="U"
+      initials="USR"
       open={userMenuActive}
       onToggle={toggleUserMenuActive}
     />
   );
 
-  const topBarMarkup = (
-    <TopBar
-      //showNavigationToggle
-      userMenu={userMenuMarkup}
-    />
-  );
+  const topBarMarkup = <TopBar userMenu={userMenuMarkup} />;
 
   return (
     <>
       <Head>
-        <link rel="icon" href="/favicon.ico" />
+        {/* <link rel="icon" href="/favicon.ico" /> */}
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta httpEquiv="X-UA-Compatible" content="ie=edge" />

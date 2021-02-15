@@ -58,19 +58,19 @@ export const deleteProduct: RequestHandler = async (req, res, next) => {
       throw error;
     }
 
-    // const deleteOrders = prisma.order.deleteMany({
-    //   where: {
-    //     products: {
-    //       some: {
-    //         id: {
-    //           equals: productId,
-    //         },
-    //       },
-    //     },
-    //   },
-    // });
+    const deleteOrders = prisma.order.deleteMany({
+      where: {
+        products: {
+          some: {
+            id: {
+              equals: productId,
+            },
+          },
+        },
+      },
+    });
     const deleteProduct = prisma.product.delete({ where: { id: productId } });
-    await prisma.$transaction([/*deleteOrders, */ deleteProduct]);
+    await prisma.$transaction([deleteOrders, deleteProduct]);
 
     res.status(200).json({ message: "Product deleted." });
   } catch (err) {

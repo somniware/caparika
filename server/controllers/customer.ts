@@ -31,10 +31,17 @@ export const deleteCustomer: RequestHandler = async (req, res, next) => {
       throw error;
     }
 
+    const deleteOrders = prisma.order.deleteMany({
+      where: {
+        creator: {
+          id: customerId,
+        },
+      },
+    });
     const deleteCustomer = prisma.customer.delete({
       where: { id: customerId },
     });
-    await prisma.$transaction([deleteCustomer]);
+    await prisma.$transaction([deleteOrders, deleteCustomer]);
 
     res.status(200).json({ message: "Customer deleted." });
   } catch (err) {

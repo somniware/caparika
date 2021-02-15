@@ -81,7 +81,7 @@ const Customers: React.FC = () => {
           <TextStyle variation="strong">{firstName + " " + lastName}</TextStyle>
         </h3>
         <div>
-          <TextStyle variation="subdued">{email + ", " + gender}</TextStyle>
+          <TextStyle variation="subdued">{email + " | " + gender}</TextStyle>
         </div>
       </ResourceItem>
     );

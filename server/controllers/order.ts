@@ -89,6 +89,10 @@ export const getOrder: RequestHandler = async (req, res, next) => {
       where: {
         id: orderId,
       },
+      include: {
+        products: true,
+        creator: true,
+      },
     });
 
     if (!order) {

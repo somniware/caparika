@@ -15,6 +15,7 @@ import {
   Form,
 } from "@shopify/polaris";
 import { useForm, Controller } from "react-hook-form";
+import Router from "next/router";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import dynamic from "next/dynamic";
@@ -85,18 +86,17 @@ const Home: React.FC = () => {
       if (result.status === 422) {
         throw new Error("Validation failed.");
       }
-      if (result.status !== 200) {
+      if (result.status !== 201) {
         throw new Error("Creating an order failed!");
       }
 
       const resultData = await result.json();
-      console.log("pre");
       reset();
-      console.log("posle");
       setSelectedItems([]);
       console.log(resultData.message);
+      Router.push("/success");
     } catch (err) {
-      // dispatch("LOGOUT");
+      console.log(err);
     }
   };
 
@@ -112,15 +112,6 @@ const Home: React.FC = () => {
 
   const renderItem = (item: Product) => {
     const { id, name, price } = item;
-
-    // const toggleItem = (id: string) => {
-    // if (selectedItems?.includes(id)){
-    //   setSelectedItems(selectedItems.);
-    //   return;
-    // }
-
-    // setSelectedItems(selectedItems?.concat(id));
-    //     };
 
     return (
       <DynamicResourceItem id={id.toString()} onClick={() => {}}>
@@ -194,7 +185,6 @@ const Home: React.FC = () => {
                     <Controller
                       name="gender"
                       control={control}
-                      //options={options}
                       defaultValue="male"
                       render={({ onChange, value }) => (
                         <Select

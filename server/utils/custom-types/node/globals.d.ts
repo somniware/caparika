@@ -2,18 +2,18 @@
 
 // declare namespace NodeJS {
 //    interface Error {
-//       patka?: number;
+//       qwe?: number;
 //    }
 // }
 
 declare global {
   // namespace NodeJS {
   interface Error {
-    patka?: number;
+    qwe?: number;
   }
   // }
 }
 
 // declare interface Error {
-//    patka?: number;
+//    qwe?: number;
 // }
