@@ -63,7 +63,9 @@ const Customers: React.FC = () => {
           });
 
           if (result.status === 200) {
-            setCustomers(customers.filter((item) => item.id !== +id));
+            setCustomers((customers) =>
+              customers.filter((item) => item.id !== +id)
+            );
           }
         }
 

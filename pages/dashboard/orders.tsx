@@ -63,7 +63,7 @@ const Orders: React.FC = () => {
           });
 
           if (result.status === 200) {
-            setOrders(orders.filter((item) => item.id !== +id));
+            setOrders((orders) => orders.filter((item) => item.id !== +id));
           }
         }
 

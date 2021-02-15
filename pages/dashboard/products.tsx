@@ -112,7 +112,9 @@ const Products: React.FC = () => {
           });
 
           if (result.status === 200) {
-            setProducts(products.filter((item) => item.id !== +id));
+            setProducts((products) =>
+              products.filter((item) => item.id !== +id)
+            );
           }
         }
 
