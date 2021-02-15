@@ -22,13 +22,11 @@ app.prepare().then(() => {
   server.use("/api/orders", orderRoutes);
 
   server.get("/*", (req, res) => {
-    // .all
     return handle(req, res);
   });
 
   server.use(
     (error: any, _req: Request, res: Response, _next: NextFunction) => {
-      console.log(">>>>>>>>>>> CUSTOM ERROR MIDDLEWARE " + error);
       const status = error.statusCode || 500;
       const message = error.message;
       const data = error.data;
@@ -37,17 +35,15 @@ app.prepare().then(() => {
     }
   );
 
-  // server.get('/a', (req, res) => {
-  //   return app.render(req, res, '/a', req.query)
-  // })
-
-  //   server.get('/post/:title', function (req, res) {
-  //     return app.render(req, res, '/post', { title: req.params.title})
-  //  })
-
-  //  RequestHandler<{ id: string }> pa const todoId = req.params.id
-
   server.listen(port, () => {
     console.log(`> Ready on http://localhost:${port}`);
   });
 });
+
+// server.get('/a', (req, res) => {
+//   return app.render(req, res, '/a', req.query)
+// })
+// server.get('/post/:title', function (req, res) {
+//   return app.render(req, res, '/post', { title: req.params.title})
+// })
+// RequestHandler<{ id: string }> pa const todoId = req.params.id
