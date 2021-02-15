@@ -1,43 +1,27 @@
-const express = require('express');
-const { body } = require('express-validator');
+import express from "express";
+import { body } from "express-validator";
 
-import * as productController from '../controllers/product';
-import isAuth from '../middleware/is-auth';
+import * as productController from "../controllers/product";
+import isAuth from "../middleware/is-auth";
 
 const router = express.Router();
 
-router.get('/products', productController.getProducts);
+router.get("/", productController.getProducts);
 
 router.post(
-  '/post',
+  "/",
   isAuth,
   [
-    body('title')
+    body("name")
       .trim()
-      .isLength({ min: 5 }),
-    body('content')
-      .trim()
-      .isLength({ min: 5 })
+      .not()
+      .isEmpty()
+      .withMessage("Please enter a product name."),
+    body("price").trim().isNumeric(),
   ],
-  productController.getProducts
+  productController.postProduct
 );
 
-// router.get('/post/:postId', isAuth, feedController.getPost);
-
-router.put(
-  '/post/:postId',
-  isAuth,
-  [
-    body('title')
-      .trim()
-      .isLength({ min: 5 }),
-    body('content')
-      .trim()
-      .isLength({ min: 5 })
-  ],
-  productController.getProducts
-);
-
-// router.delete('/post/:postId', isAuth, feedController.deletePost);
+router.delete("/:productId", isAuth, productController.deleteProduct);
 
 export default router;

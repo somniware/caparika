@@ -1,13 +1,37 @@
+import { useEffect } from "react";
 import Link from "next/link";
 import { AppProvider } from "@shopify/polaris";
 import enTranslations from "@shopify/polaris/locales/en.json";
 import "@shopify/polaris/dist/styles.css";
 import configureAuthStore from "../hooks-store/auth-store";
+import { useStore } from "../hooks-store/store";
 import type { AppProps } from "next/app";
 
 configureAuthStore();
 
 const App: React.FC<AppProps> = ({ Component, pageProps }) => {
+  const [, dispatch] = useStore();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const expiryDate = localStorage.getItem("expiryDate");
+    if (!token || !expiryDate) {
+      return;
+    }
+    if (new Date(expiryDate) <= new Date()) {
+      dispatch("LOGOUT");
+      return;
+    }
+
+    dispatch("LOGIN", token);
+
+    const remainingMilliseconds =
+      new Date(expiryDate).getTime() - new Date().getTime();
+    setTimeout(() => {
+      dispatch("LOGOUT");
+    }, remainingMilliseconds);
+  }, []);
+
   const IS_EXTERNAL_LINK_REGEX = /^(?:[a-z][a-z\d+.-]*:|\/\/)/;
 
   const CustomLinkComponent = ({

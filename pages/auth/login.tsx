@@ -24,8 +24,8 @@ interface IFormInputs {
 }
 
 const schema = yup.object().shape({
-  email: yup.string().trim().email().required(),
-  password: yup.string().trim().required(),
+  email: yup.string().trim().email().required("Email is required."),
+  password: yup.string().trim().required("Password is required."),
 });
 
 const Login: React.FC = () => {

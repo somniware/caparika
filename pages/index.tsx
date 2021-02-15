@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Page,
   Layout,
@@ -7,6 +7,7 @@ import {
   TextStyle,
   TextField,
   FormLayout,
+  ResourceListSelectedItems,
   Select,
   Caption,
   Scrollable,
@@ -23,7 +24,7 @@ const DynamicResourceItem = dynamic(
 );
 
 import GeneralLayout from "../components/layout-general";
-import Product from "../server/models/product";
+import { Product } from "@prisma/client";
 
 interface IFormInputs {
   firstName: string;
@@ -40,48 +41,89 @@ const schema = yup.object().shape({
 });
 
 const Home: React.FC = () => {
-  const { control, handleSubmit, errors } = useForm({
+  const { control, handleSubmit, reset, errors } = useForm({
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = (data: IFormInputs) => {
-    alert(
-      data.firstName +
-        " " +
-        data.lastName +
-        " " +
-        data.email +
-        " " +
-        data.gender
-    );
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const result = await fetch("/api/products", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (result.status === 200) {
+        const products = (await result.json()) as Product[];
+        setProducts(products);
+      }
+    })();
+  }, []);
+
+  const onSubmit = async (data: IFormInputs) => {
+    try {
+      const result = await fetch("/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+          gender: data.gender,
+          productIds:
+            selectedItems === "All"
+              ? products.map((item) => item.id.toString())
+              : selectedItems,
+        }),
+      });
+
+      if (result.status === 422) {
+        throw new Error("Validation failed.");
+      }
+      if (result.status !== 200) {
+        throw new Error("Creating an order failed!");
+      }
+
+      const resultData = await result.json();
+      console.log("pre");
+      reset();
+      console.log("posle");
+      setSelectedItems([]);
+      console.log(resultData.message);
+    } catch (err) {
+      // dispatch("LOGOUT");
+    }
   };
 
-  const [selectedItems /*, setSelectedItems*/] = useState([]);
+  const [
+    selectedItems,
+    setSelectedItems,
+  ] = useState<ResourceListSelectedItems>();
 
   const resourceName = {
     singular: "product",
     plural: "products",
   };
 
-  const items: Product[] = [
-    {
-      id: 101,
-      name: "Mae Jemison",
-      price: 0.99,
-    },
-    {
-      id: 201,
-      // url: 'customers/256',
-      name: "Ellen Ochoa",
-      price: 9.99,
-    },
-  ];
-
   const renderItem = (item: Product) => {
     const { id, name, price } = item;
 
+    // const toggleItem = (id: string) => {
+    // if (selectedItems?.includes(id)){
+    //   setSelectedItems(selectedItems.);
+    //   return;
+    // }
+
+    // setSelectedItems(selectedItems?.concat(id));
+    //     };
+
     return (
-      <DynamicResourceItem id={id.toString()} url="https://google.com">
+      <DynamicResourceItem id={id.toString()} onClick={() => {}}>
         <h3>
           <TextStyle variation="strong">{name}</TextStyle>
         </h3>
@@ -173,10 +215,11 @@ const Home: React.FC = () => {
                 <Scrollable>
                   <ResourceList
                     resourceName={resourceName}
-                    items={items}
+                    items={products}
                     renderItem={renderItem}
                     selectedItems={selectedItems}
-                    // onSelectionChange={setSelectedItems}
+                    onSelectionChange={setSelectedItems}
+                    idForItem={(item) => item.id.toString()}
                     selectable
                   />
                 </Scrollable>

@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 import { RequestHandler } from "express";
 
-import Token from "../utils/token";
 import CustomError from "../utils/custom-error";
 
 const isAuth: RequestHandler = (req, _res, next) => {
@@ -13,9 +12,9 @@ const isAuth: RequestHandler = (req, _res, next) => {
   }
 
   const token = authHeader.split(" ")[1];
-  let decodedToken: Token;
+  let decodedToken: string | object;
   try {
-    decodedToken = jwt.verify(token, "somesecret") as Token;
+    decodedToken = jwt.verify(token, "somesecret");
   } catch (err) {
     err.statusCode = 500;
     throw err;
@@ -24,12 +23,10 @@ const isAuth: RequestHandler = (req, _res, next) => {
   if (!decodedToken) {
     const error = new CustomError("Not authenticated.");
     error.statusCode = 401;
-    // const rrr = new Error('asdaswedasd');
-    // rrr.patka = 33;
     throw error;
   }
 
-  req.userId = decodedToken.userId;
+  req.userId = (decodedToken as { userId: string }).userId;
   next();
 };
 

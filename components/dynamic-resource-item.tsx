@@ -4,11 +4,11 @@ import { ResourceItem } from "@shopify/polaris";
 interface Props {
   children: ReactNode;
   id: string;
-  url: string;
+  onClick: (id?: string) => void;
 }
 
-const DynamicResourceItem: React.FC<Props> = ({ children, id, url }) => (
-  <ResourceItem id={id} url={url}>
+const DynamicResourceItem: React.FC<Props> = ({ children, id, onClick }) => (
+  <ResourceItem id={id} onClick={onClick}>
     {children}
   </ResourceItem>
 );

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Page,
   Layout,
@@ -7,6 +7,7 @@ import {
   TextStyle,
   ResourceItem,
   TextField,
+  ResourceListSelectedItems,
   FormLayout,
   Caption,
   Scrollable,
@@ -18,7 +19,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
 import DashboardLayout from "../../components/layout-dashboard";
-import Product from "../../server/models/product";
+import { useStore } from "../../hooks-store/store";
+import { Product } from "@prisma/client";
 
 interface IFormInputs {
   name: string;
@@ -26,46 +28,99 @@ interface IFormInputs {
 }
 
 const schema = yup.object().shape({
-  name: yup.string().trim().required(),
-  price: yup.number().required(),
+  name: yup.string().trim().required("Name is required."),
+  price: yup.number().required("Price is required."),
 });
 
 const Products: React.FC = () => {
-  const { control, handleSubmit, errors } = useForm({
+  const { control, handleSubmit, reset, errors } = useForm({
     resolver: yupResolver(schema),
   });
+  const [products, setProducts] = useState<Product[]>([]);
+  const [state] = useStore();
 
-  const onSubmit = (data: IFormInputs) => {
-    alert(data.name + " " + data.price);
+  useEffect(() => {
+    (async () => {
+      const result = await fetch("/api/products", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (result.status === 200) {
+        const products = (await result.json()) as Product[];
+        setProducts(products);
+      }
+    })();
+  }, []);
+
+  const onSubmit = async (data: IFormInputs) => {
+    try {
+      const result = await fetch("/api/products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + (state as { token: string }).token,
+        },
+        body: JSON.stringify({
+          name: data.name,
+          price: data.price,
+        }),
+      });
+
+      if (result.status === 422) {
+        throw new Error("Validation failed.");
+      }
+      if (result.status !== 201) {
+        throw new Error("Creating a product failed!");
+      }
+
+      reset();
+      const resultData = await result.json();
+      setProducts([resultData.product, ...products]);
+    } catch (err) {
+      //dispatch("LOGOUT");
+    }
   };
 
-  const [selectedItems /*, setSelectedItems*/] = useState<string[]>([]);
+  const [selectedItems, setSelectedItems] = useState<ResourceListSelectedItems>(
+    []
+  );
 
   const resourceName = {
     singular: "product",
     plural: "products",
   };
 
-  const items: Product[] = [
-    {
-      id: 101,
-      name: "Mae Jemison",
-      price: 0.99,
-    },
-    {
-      id: 201,
-      // url: 'customers/256',
-      name: "Ellen Ochoa",
-      price: 9.99,
-    },
-  ];
-
   const promotedBulkActions = [
     {
       content: "Delete",
-      onAction: () => console.log("Todo: implement bulk delete"),
+      onAction: async () => {
+        const selItems =
+          selectedItems === "All"
+            ? products.map((item) => item.id.toString())
+            : selectedItems;
+
+        for (const id of selItems) {
+          const result = await fetch(`/api/products/${id}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + (state as { token: string }).token,
+            },
+          });
+
+          if (result.status === 200) {
+            setProducts(products.filter((item) => item.id !== +id));
+          }
+        }
+
+        setSelectedItems([]);
+      },
     },
   ];
+
   const renderItem = (item: Product) => {
     const { id, name, price } = item;
 
@@ -140,11 +195,12 @@ const Products: React.FC = () => {
                 <Scrollable>
                   <ResourceList
                     resourceName={resourceName}
-                    items={items}
+                    items={products}
                     renderItem={renderItem}
                     selectedItems={selectedItems}
-                    //onSelectionChange={(value) => setSelectedItems()}
+                    onSelectionChange={setSelectedItems}
                     promotedBulkActions={promotedBulkActions}
+                    idForItem={(item) => item.id.toString()}
                     selectable
                   />
                 </Scrollable>

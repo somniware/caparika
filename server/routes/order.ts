@@ -1,30 +1,38 @@
-import express from 'express';
-import { body } from 'express-validator';
+import express from "express";
+import { body } from "express-validator";
 
-// import User from '../models/user';
-import * as orderController from '../controllers/order';
-import isAuth from '../middleware/is-auth';
+import * as orderController from "../controllers/order";
+import isAuth from "../middleware/is-auth";
 
 const router = express.Router();
 
-router.put(
-  '/signup',
+router.post(
+  "/",
   [
-    body('email')
-      .isEmail()
-      .withMessage('Please enter a valid email.')
-      .normalizeEmail(),
-    body('password')
-      .trim()
-      .isLength({ min: 5 }),
-    body('name')
+    body("firstName")
       .trim()
       .not()
       .isEmpty()
+      .withMessage("Please enter a first name."),
+    body("lastName")
+      .trim()
+      .not()
+      .isEmpty()
+      .withMessage("Please enter a last name."),
+    body("email")
+      .isEmail()
+      .withMessage("Please enter a valid email.")
+      .normalizeEmail(),
+    body("gender").trim().not().isEmpty().withMessage("Please enter a gender."),
+    body("productIds").not().isEmpty().withMessage("Please choose products."),
   ],
-  orderController.getOrders
+  orderController.postOrder
 );
 
-router.get('/orders', isAuth, orderController.getOrders);
+router.get("/:orderId", isAuth, orderController.getOrder);
+
+router.get("/", isAuth, orderController.getOrders);
+
+router.delete("/:orderId", isAuth, orderController.deleteOrder);
 
 export default router;

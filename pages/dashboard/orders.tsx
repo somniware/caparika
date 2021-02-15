@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Page,
   Layout,
@@ -7,50 +7,80 @@ import {
   TextStyle,
   ResourceItem,
   Scrollable,
+  ResourceListSelectedItems,
 } from "@shopify/polaris";
 
 import DashboardLayout from "../../components/layout-dashboard";
-import Product from "../../server/models/product";
+import { useStore } from "../../hooks-store/store";
+import { Order } from "@prisma/client";
 
 const Orders: React.FC = () => {
-  const [selectedItems /*, setSelectedItems*/] = useState<string[]>([]);
+  const [state] = useStore();
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [selectedItems, setSelectedItems] = useState<ResourceListSelectedItems>(
+    []
+  );
+
+  useEffect(() => {
+    (async () => {
+      const result = await fetch("/api/orders", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + (state as { token: string }).token,
+        },
+      });
+
+      if (result.status === 200) {
+        const orders = (await result.json()) as Order[];
+        setOrders(orders);
+      }
+    })();
+  }, []);
 
   const resourceName = {
-    singular: "customer",
-    plural: "customers",
+    singular: "order",
+    plural: "orders",
   };
-
-  const items: Product[] = [
-    {
-      id: 101,
-      name: "Mae Jemison",
-      price: 0.99,
-    },
-    {
-      id: 201,
-      // url: 'customers/256',
-      name: "Ellen Ochoa",
-      price: 9.99,
-    },
-  ];
 
   const promotedBulkActions = [
     {
       content: "Delete",
-      onAction: () => console.log("Todo: implement bulk delete"),
+      onAction: async () => {
+        const selItems =
+          selectedItems === "All"
+            ? orders.map((item) => item.id.toString())
+            : selectedItems;
+
+        for (const id of selItems) {
+          const result = await fetch(`/api/orders/${id}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + (state as { token: string }).token,
+            },
+          });
+
+          if (result.status === 200) {
+            setOrders(orders.filter((item) => item.id !== +id));
+          }
+        }
+
+        setSelectedItems([]);
+      },
     },
   ];
 
-  const renderItem = (item: Product) => {
-    const { id, name, price } = item;
+  const renderItem = (item: Order) => {
+    const { id, creatorId } = item;
 
     return (
       <ResourceItem id={id.toString()} onClick={() => {}}>
         <h3>
-          <TextStyle variation="strong">{name}</TextStyle>
+          <TextStyle variation="strong">{creatorId}</TextStyle>
         </h3>
         <div>
-          <TextStyle variation="subdued">{price}</TextStyle>
+          <TextStyle variation="subdued">{creatorId}</TextStyle>
         </div>
       </ResourceItem>
     );
@@ -69,11 +99,12 @@ const Orders: React.FC = () => {
                 <Scrollable>
                   <ResourceList
                     resourceName={resourceName}
-                    items={items}
+                    items={orders}
                     renderItem={renderItem}
                     selectedItems={selectedItems}
-                    //onSelectionChange={(value) => setSelectedItems()}
+                    onSelectionChange={setSelectedItems}
                     promotedBulkActions={promotedBulkActions}
+                    idForItem={(item) => item.id.toString()}
                     selectable
                   />
                 </Scrollable>

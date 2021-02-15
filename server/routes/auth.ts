@@ -2,8 +2,7 @@ import express from "express";
 import { body } from "express-validator";
 
 import prisma from "../utils/prisma";
-//import isAuth from "../middleware/is-auth";
-import { signup, login /*, logout */ } from "../controllers/auth";
+import * as authController from "../controllers/auth";
 
 const router = express.Router();
 
@@ -22,9 +21,13 @@ router.put(
         }
       })
       .normalizeEmail(),
-    body("password").trim().isLength({ min: 1 }),
+    body("password")
+      .trim()
+      .not()
+      .isEmpty()
+      .withMessage("Please enter a password."),
   ],
-  signup
+  authController.signup
 );
 
 router.post(
@@ -34,11 +37,13 @@ router.post(
       .isEmail()
       .withMessage("Please enter a valid email.")
       .normalizeEmail(),
-    body("password").trim().isLength({ min: 1 }),
+    body("password")
+      .trim()
+      .not()
+      .isEmpty()
+      .withMessage("Please enter a password."),
   ],
-  login
+  authController.login
 );
-
-//router.post("/logout", isAuth, logout);
 
 export default router;

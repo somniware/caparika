@@ -1,4 +1,4 @@
-import { ReactNode, useState, useCallback, Redirect } from "react";
+import { ReactNode, useState, useCallback, useEffect } from "react";
 import { Frame, TopBar, IconableAction, Navigation } from "@shopify/polaris";
 import {
   OrdersMajor,
@@ -22,9 +22,11 @@ const DashboardLayout: React.FC<Props> = ({ children }) => {
   );
   const [state, dispatch] = useStore();
 
-  if (!(state as { isAuth: boolean }).isAuth) {
-    Router.push("/");
-  }
+  useEffect(() => {
+    if (!(state as { isAuth: boolean }).isAuth) {
+      Router.push("/");
+    }
+  }, []);
 
   const userMenuActions: { items: IconableAction[] }[] = [
     {
@@ -92,5 +94,20 @@ const DashboardLayout: React.FC<Props> = ({ children }) => {
     </>
   );
 };
+
+// export async function getStaticProps() {
+//   const res = await fetch("https://.../posts");
+//   const posts = await res.json();
+
+//   return {
+//     props: {
+//       posts,
+//     },
+//     // Next.js will attempt to re-generate the page:
+//     // - When a request comes in
+//     // - At most once every second
+//     revalidate: 1, // In seconds
+//   };
+// }
 
 export default DashboardLayout;

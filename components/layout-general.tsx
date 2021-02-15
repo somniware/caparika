@@ -40,14 +40,6 @@ const GeneralLayout: React.FC<Props> = ({ children }) => {
         },
       ],
     },
-    {
-      items: [
-        {
-          content: "Dashboard",
-          url: "/dashboard",
-        },
-      ],
-    },
   ];
 
   const userMenuMarkup = (
